@@ -89,16 +89,6 @@
 	<build>
 		<finalName>${project.name}</finalName>
 		<plugins>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
 			<!-- clean lifecycle, see
 			https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
 			<plugin>
@@ -121,9 +111,6 @@
 			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-			</plugin>
 			<!-- site lifecycle, see
 			https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
 			<plugin>
@@ -139,7 +126,35 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<publishingServerId>central</publishingServerId>
+					<autoPublish>true</autoPublish>
+					<waitUntil>published</waitUntil>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<gpgArguments>
+						<arg>--pinentry-mode</arg>
+						<arg>loopback</arg>
+					</gpgArguments>
+					<useAgent>false</useAgent>
+					<passphrase>${gpg.passphrase}</passphrase>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
