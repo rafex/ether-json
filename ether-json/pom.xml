@@ -7,12 +7,12 @@
 	<parent>
 		<groupId>dev.rafex.ether.parent</groupId>
 		<artifactId>ether-parent</artifactId>
-		<version>3.0.1-v20250721</version>
+		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>dev.rafex.ether.json</groupId>
 	<artifactId>ether-json</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.1-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
@@ -32,6 +32,7 @@
 			<name>MIT License</name>
 			<url>https://opensource.org/license/mit/</url>
 			<distribution>repo</distribution>
+			<comments>Copyright (c) 2025 Raúl Eduardo González Argote</comments>
 		</license>
 	</licenses>
 
@@ -155,6 +156,10 @@
 					<useAgent>false</useAgent>
 					<passphrase>${gpg.passphrase}</passphrase>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
