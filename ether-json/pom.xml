@@ -12,7 +12,7 @@
 
 	<groupId>dev.rafex.ether.json</groupId>
 	<artifactId>ether-json</artifactId>
-	<version>3.0.1-SNAPSHOT</version>
+	<version>4.0.0-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
@@ -20,11 +20,10 @@
 	<url>https://rafex.dev/ether/json</url>
 
 	<description>
-		Colección de utilidades ligeras y modulares para crear, configurar y
-		desplegar microservicios en Java sin necesidad de frameworks pesados.
-		Incluye componentes reutilizables de JSON, gestión de propiedades, JDBC,
-		email, CLI y más, facilitando la implementación ágil y estandarizada de
-		servicios REST.
+		Librería ligera para serialización y deserialización JSON en Java basada
+		en Jackson. Incluye API de codec extensible, soporte para tipos
+		genéricos, utilidades para JsonNode, operaciones con String/bytes/streams
+		y validación opcional con JSON Schema.
 	</description>
 
 	<licenses>
