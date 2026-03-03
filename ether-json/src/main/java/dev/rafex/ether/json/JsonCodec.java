@@ -1,5 +1,3 @@
-package dev.rafex.ether.json;
-
 /*-
  * #%L
  * ether-json
@@ -26,20 +24,54 @@ package dev.rafex.ether.json;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.InputStream;
+package dev.rafex.ether.json;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface JsonCodec {
 
-	String toJson(Object value);
+    String toJson(Object value);
 
-	<T> T readValue(InputStream input, Class<T> type) throws IOException;
+    String toPrettyJson(Object value);
 
-	JsonNode readTree(String content) throws IOException;
+    byte[] toJsonBytes(Object value);
 
-	JsonNode readTree(InputStream input) throws IOException;
+    void writeValue(OutputStream output, Object value);
 
+    <T> T readValue(InputStream input, Class<T> type);
+
+    <T> T readValue(InputStream input, TypeReference<T> typeRef);
+
+    <T> T readValue(InputStream input, JavaType type);
+
+    <T> T readValue(String content, Class<T> type);
+
+    <T> T readValue(String content, TypeReference<T> typeRef);
+
+    <T> T readValue(String content, JavaType type);
+
+    <T> T readValue(byte[] content, Class<T> type);
+
+    <T> T readValue(byte[] content, TypeReference<T> typeRef);
+
+    <T> T readValue(byte[] content, JavaType type);
+
+    JsonNode readTree(String content);
+
+    JsonNode readTree(InputStream input);
+
+    JsonNode readTree(byte[] input);
+
+    JsonNode valueToTree(Object value);
+
+    <T> T treeToValue(JsonNode node, Class<T> type);
+
+    <T> T treeToValue(JsonNode node, TypeReference<T> typeRef);
+
+    JsonNode at(JsonNode node, String pointer);
 }
-

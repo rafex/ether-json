@@ -1,5 +1,3 @@
-package dev.rafex.ether.json;
-
 /*-
  * #%L
  * ether-json
@@ -26,94 +24,124 @@ package dev.rafex.ether.json;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.type.CollectionType;
+package dev.rafex.ether.json;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public final class JsonUtils {
 
     private static final JacksonJsonCodec DEFAULT_CODEC = JacksonJsonCodec.defaultCodec();
 
     private JsonUtils() {
-        // Utility class
     }
 
-    /** Serializa un objeto Java a su representación JSON en String. */
-    public static String toJson(Object value) {
+    public static String toJson(final Object value) {
         return DEFAULT_CODEC.toJson(value);
     }
 
-    /** Deserializa un JSON (String) a un POJO de tipo T. */
-    public static <T> T fromJson(String json, Class<T> clazz) {
-        try {
-            return DEFAULT_CODEC.mapper().readValue(json, clazz);
-        } catch (IOException e) {
-            throw new RuntimeException("Error deserializando JSON", e);
-        }
+    public static String toPrettyJson(final Object value) {
+        return DEFAULT_CODEC.toPrettyJson(value);
     }
 
-    /** Deserializa un JSON (String) a una lista de POJOs de tipo T. */
-    public static <T> List<T> fromJsonToList(String json, Class<T> elementClass) {
-        try {
-            CollectionType listType = DEFAULT_CODEC.mapper().getTypeFactory()
-                .constructCollectionType(List.class, elementClass);
-            return DEFAULT_CODEC.mapper().readValue(json, listType);
-        } catch (IOException e) {
-            throw new RuntimeException("Error deserializando JSON a List", e);
-        }
+    public static byte[] toJsonBytes(final Object value) {
+        return DEFAULT_CODEC.toJsonBytes(value);
     }
 
-    /** Parsea un String JSON a un árbol de nodos Jackson. */
-    public static JsonNode parseTree(String json) {
-        try {
-            return DEFAULT_CODEC.readTree(json);
-        } catch (IOException e) {
-            throw new RuntimeException("Error parseando JSON a JsonNode", e);
-        }
+    public static void writeJson(final OutputStream output, final Object value) {
+        DEFAULT_CODEC.writeValue(output, value);
     }
 
-    /** Parsea un stream JSON a un árbol de nodos Jackson. */
-    public static JsonNode parseTree(InputStream input) {
-        try {
+    public static <T> T fromJson(final String json, final Class<T> clazz) {
+        return DEFAULT_CODEC.readValue(json, clazz);
+    }
+
+    public static <T> T fromJson(final String json, final TypeReference<T> typeRef) {
+        return DEFAULT_CODEC.readValue(json, typeRef);
+    }
+
+    public static <T> T fromJson(final String json, final JavaType type) {
+        return DEFAULT_CODEC.readValue(json, type);
+    }
+
+    public static <T> T fromJson(final InputStream input, final Class<T> clazz) {
+        return DEFAULT_CODEC.readValue(input, clazz);
+    }
+
+    public static <T> T fromJson(final InputStream input, final TypeReference<T> typeRef) {
+        return DEFAULT_CODEC.readValue(input, typeRef);
+    }
+
+    public static <T> T fromJson(final InputStream input, final JavaType type) {
+        return DEFAULT_CODEC.readValue(input, type);
+    }
+
+    public static <T> T fromJson(final byte[] input, final Class<T> clazz) {
+        return DEFAULT_CODEC.readValue(input, clazz);
+    }
+
+    public static <T> T fromJson(final byte[] input, final TypeReference<T> typeRef) {
+        return DEFAULT_CODEC.readValue(input, typeRef);
+    }
+
+    public static <T> T fromJson(final byte[] input, final JavaType type) {
+        return DEFAULT_CODEC.readValue(input, type);
+    }
+
+    public static <T> List<T> fromJsonToList(final String json, final Class<T> elementClass) {
+        final var listType = DEFAULT_CODEC.mapper().getTypeFactory().constructCollectionType(List.class, elementClass);
+        return DEFAULT_CODEC.readValue(json, listType);
+    }
+
+    public static JsonNode parseTree(final String json) {
+        return DEFAULT_CODEC.readTree(json);
+    }
+
+    public static JsonNode parseTree(final InputStream input) {
+        return DEFAULT_CODEC.readTree(input);
+    }
+
+    public static JsonNode parseTree(final byte[] input) {
+        return DEFAULT_CODEC.readTree(input);
+    }
+
+    public static JsonNode readTreeFromFile(final Path path) {
+        try (InputStream input = Files.newInputStream(path)) {
             return DEFAULT_CODEC.readTree(input);
-        } catch (IOException e) {
-            throw new RuntimeException("Error parseando stream JSON a JsonNode", e);
+        } catch (final IOException e) {
+            throw new JsonCodecException("Error leyendo JSON desde fichero", e);
         }
     }
 
-    /** Lee un fichero JSON y lo parsea a JsonNode. */
-    public static JsonNode readTreeFromFile(Path path) {
-        try {
-            return DEFAULT_CODEC.mapper().readTree(path.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException("Error leyendo JSON desde fichero", e);
-        }
+    public static JsonNode valueToTree(final Object value) {
+        return DEFAULT_CODEC.valueToTree(value);
     }
 
-    /** Convierte un JsonNode a un POJO de tipo T. */
-    public static <T> T treeToValue(JsonNode node, Class<T> clazz) {
-        try {
-            return DEFAULT_CODEC.mapper().treeToValue(node, clazz);
-        } catch (IOException e) {
-            throw new RuntimeException("Error convirtiendo JsonNode a POJO", e);
-        }
+    public static JsonNode at(final JsonNode node, final String pointer) {
+        return DEFAULT_CODEC.at(node, pointer);
     }
 
-    /** Deserializa un JSON desde InputStream a un POJO de tipo T. */
-    public static <T> T fromJson(InputStream input, Class<T> clazz) {
-        try {
-            return DEFAULT_CODEC.readValue(input, clazz);
-        } catch (IOException e) {
-            throw new RuntimeException("Error deserializando stream JSON", e);
-        }
+    public static <T> T treeToValue(final JsonNode node, final Class<T> clazz) {
+        return DEFAULT_CODEC.treeToValue(node, clazz);
     }
 
-    /** Expone el codec por defecto para reutilización en otros módulos Ether. */
+    public static <T> T treeToValue(final JsonNode node, final TypeReference<T> typeRef) {
+        return DEFAULT_CODEC.treeToValue(node, typeRef);
+    }
+
     public static JsonCodec codec() {
         return DEFAULT_CODEC;
+    }
+
+    public static JsonCodec codec(final JsonCodecBuilder builder) {
+        return builder.build();
     }
 }
