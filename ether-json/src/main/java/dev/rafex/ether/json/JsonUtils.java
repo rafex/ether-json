@@ -26,18 +26,17 @@ package dev.rafex.ether.json;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 
 public final class JsonUtils {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final JacksonJsonCodec DEFAULT_CODEC = JacksonJsonCodec.defaultCodec();
 
     private JsonUtils() {
         // Utility class
@@ -45,17 +44,13 @@ public final class JsonUtils {
 
     /** Serializa un objeto Java a su representación JSON en String. */
     public static String toJson(Object value) {
-        try {
-            return MAPPER.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error serializando a JSON", e);
-        }
+        return DEFAULT_CODEC.toJson(value);
     }
 
     /** Deserializa un JSON (String) a un POJO de tipo T. */
     public static <T> T fromJson(String json, Class<T> clazz) {
         try {
-            return MAPPER.readValue(json, clazz);
+            return DEFAULT_CODEC.mapper().readValue(json, clazz);
         } catch (IOException e) {
             throw new RuntimeException("Error deserializando JSON", e);
         }
@@ -64,9 +59,9 @@ public final class JsonUtils {
     /** Deserializa un JSON (String) a una lista de POJOs de tipo T. */
     public static <T> List<T> fromJsonToList(String json, Class<T> elementClass) {
         try {
-            CollectionType listType = MAPPER.getTypeFactory()
+            CollectionType listType = DEFAULT_CODEC.mapper().getTypeFactory()
                 .constructCollectionType(List.class, elementClass);
-            return MAPPER.readValue(json, listType);
+            return DEFAULT_CODEC.mapper().readValue(json, listType);
         } catch (IOException e) {
             throw new RuntimeException("Error deserializando JSON a List", e);
         }
@@ -75,16 +70,25 @@ public final class JsonUtils {
     /** Parsea un String JSON a un árbol de nodos Jackson. */
     public static JsonNode parseTree(String json) {
         try {
-            return MAPPER.readTree(json);
-        } catch (JsonProcessingException e) {
+            return DEFAULT_CODEC.readTree(json);
+        } catch (IOException e) {
             throw new RuntimeException("Error parseando JSON a JsonNode", e);
+        }
+    }
+
+    /** Parsea un stream JSON a un árbol de nodos Jackson. */
+    public static JsonNode parseTree(InputStream input) {
+        try {
+            return DEFAULT_CODEC.readTree(input);
+        } catch (IOException e) {
+            throw new RuntimeException("Error parseando stream JSON a JsonNode", e);
         }
     }
 
     /** Lee un fichero JSON y lo parsea a JsonNode. */
     public static JsonNode readTreeFromFile(Path path) {
         try {
-            return MAPPER.readTree(path.toFile());
+            return DEFAULT_CODEC.mapper().readTree(path.toFile());
         } catch (IOException e) {
             throw new RuntimeException("Error leyendo JSON desde fichero", e);
         }
@@ -93,9 +97,23 @@ public final class JsonUtils {
     /** Convierte un JsonNode a un POJO de tipo T. */
     public static <T> T treeToValue(JsonNode node, Class<T> clazz) {
         try {
-            return MAPPER.treeToValue(node, clazz);
-        } catch (JsonProcessingException e) {
+            return DEFAULT_CODEC.mapper().treeToValue(node, clazz);
+        } catch (IOException e) {
             throw new RuntimeException("Error convirtiendo JsonNode a POJO", e);
         }
+    }
+
+    /** Deserializa un JSON desde InputStream a un POJO de tipo T. */
+    public static <T> T fromJson(InputStream input, Class<T> clazz) {
+        try {
+            return DEFAULT_CODEC.readValue(input, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException("Error deserializando stream JSON", e);
+        }
+    }
+
+    /** Expone el codec por defecto para reutilización en otros módulos Ether. */
+    public static JsonCodec codec() {
+        return DEFAULT_CODEC;
     }
 }
