@@ -40,8 +40,7 @@ class JsonCodecBuilderTest {
     void strictShouldFailOnUnknownProperties() {
         final var codec = JsonCodecBuilder.strict().build();
 
-        assertThrows(JsonCodecException.class,
-                () -> codec.readValue("{\"name\":\"x\",\"extra\":1}", StrictUser.class));
+        assertThrows(JsonCodecException.class, () -> codec.readValue("{\"name\":\"x\",\"extra\":1}", StrictUser.class));
     }
 
     @Test
